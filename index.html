@@ -7,7 +7,22 @@
 <link rel="stylesheet" href="style.css">
 </head>
 
-<body class="page-home">
+<body class="page-home gate-locked">
+
+<!-- ENTRY GATE -->
+<div class="enter-overlay" id="enterOverlay">
+  <div class="portal-ring" id="portalRing"></div>
+  <div class="portal-ring portal-ring-2" id="portalRing2"></div>
+  <div class="portal-flash" id="portalFlash"></div>
+  <div class="enter-overlay-inner" id="enterInner">
+    <div class="enter-logo">MARVEL<span>GUIDE</span></div>
+    <div class="enter-tagline">Your complete companion to the MCU, X-Men &amp; the Road to Doomsday</div>
+    <button class="enter-btn" id="enterBtn">
+      Enter the Marvel Universe
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </button>
+  </div>
+</div>
 
 <!-- NAVBAR -->
 
@@ -27,7 +42,7 @@
 
 <header class="hero">
 
-  <video id="heroVideo" class="hero-video" autoplay muted loop playsinline preload="auto">
+  <video id="heroVideo" class="hero-video" muted loop playsinline preload="auto">
     <source src="Images/intro.mp4" type="video/mp4">
   </video>
 
@@ -247,6 +262,55 @@
 
 
 <script src="script.js"></script>
+<script>
+  (function () {
+    var overlay = document.getElementById('enterOverlay');
+    var inner = document.getElementById('enterInner');
+    var enterBtn = document.getElementById('enterBtn');
+    var video = document.getElementById('heroVideo');
+    var body = document.body;
+
+    if (!overlay || !enterBtn) return;
+
+    enterBtn.addEventListener('click', function () {
+      overlay.classList.add('portal-open');
+
+      // portal has torn open and flash is at its peak — reveal the sharp,
+      // playing video behind the brightness so the transition is hidden
+      setTimeout(function () {
+        body.classList.remove('gate-locked');
+
+        if (video) {
+          video.muted = false;
+          video.volume = 1;
+          var playPromise = video.play();
+          if (playPromise !== undefined) {
+            playPromise.catch(function () {
+              video.muted = true;
+              video.play();
+            });
+          }
+        }
+      }, 520);
+
+      // portal animation fully finished — fade out and remove the gate
+      setTimeout(function () {
+        overlay.classList.add('enter-overlay-hide');
+      }, 1300);
+
+      setTimeout(function () {
+        overlay.remove();
+      }, 2000);
+    });
+
+    // allow Enter/Space to trigger the button when focused, and Enter key globally while gate is up
+    document.addEventListener('keydown', function (e) {
+      if (body.classList.contains('gate-locked') && (e.key === 'Enter' || e.key === ' ')) {
+        enterBtn.click();
+      }
+    });
+  })();
+</script>
 
 </body>
 </html>
